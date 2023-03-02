@@ -1,7 +1,7 @@
 {
   "name": "cloudresumechallenge-app",
   "version": "1.0.0",
-  "description": "The HTTP API and servless function for use in J. Law. Cordova's resume. Part of the Cloud Resume Challenge (AWS Edition).",
+  "description": "The HTTP API and serverless function for use in J. Law. Cordova's resume. Part of the Cloud Resume Challenge (AWS Edition).",
   "main": "index.js",
   "scripts": {},
   "author": "J. Law. Cordova",
