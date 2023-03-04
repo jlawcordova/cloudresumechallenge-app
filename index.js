@@ -1,4 +1,5 @@
-import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, UpdateItemCommand }
+    from "@aws-sdk/client-dynamodb";
 
 const Region = "ap-southeast-1";
 var ViewCountDynamoDBClient = new DynamoDBClient({ region: Region });
@@ -15,7 +16,8 @@ export const handler = async(event) => {
         },
         ReturnValues: "UPDATED_NEW",
     };
-    const data = await ViewCountDynamoDBClient.send(new UpdateItemCommand(updateParams));
+    const data = await ViewCountDynamoDBClient
+        .send(new UpdateItemCommand(updateParams));
 
     const response = {
         statusCode: 200,
