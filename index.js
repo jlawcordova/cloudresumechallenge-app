@@ -4,15 +4,20 @@ import {
   PutItemCommand,
   UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
+import { createHash } from "crypto";
 
 const Region = "ap-southeast-1";
 var dynamoDBClient = new DynamoDBClient({ region: Region });
+
+function hash(string) {
+  return createHash("sha256").update(string).digest("hex");
+}
 
 async function hasVisitorViewed(ip) {
   const params = {
     TableName: "Visitor",
     Key: {
-      IP: { S: ip },
+      IP: { S: hash(ip) },
     },
   };
   const data = await dynamoDBClient.send(new GetItemCommand(params));
@@ -34,7 +39,7 @@ async function putVisitor(ip) {
   const params = {
     TableName: "Visitor",
     Item: {
-      IP: { S: ip },
+      IP: { S: hash(ip) },
       ViewedOn: { S: new Date().toISOString() },
     },
   };
@@ -73,13 +78,13 @@ async function incrementViewCount(resumeId) {
 }
 
 export const handler = async (event) => {
-  const ip = event.headers["X-Forwarded-For"].split(", ")[0];
+  const ip = event.requestContext.http.sourceIp;
   const hasViewed = await hasVisitorViewed(ip);
 
   let viewCount;
   const resumeId = "26c89138-35c6-4446-ae91-da38a5252ad1";
 
-  // Only retrieve the view count if the user has already
+  // Just retrieve the view count if the user has already
   // viewed the resume.
   if (hasViewed) {
     viewCount = await getViewCount(resumeId);
@@ -93,6 +98,7 @@ export const handler = async (event) => {
     return response;
   }
 
+  // Otherwise, increment the view count and record the visitor.
   viewCount = await incrementViewCount(resumeId);
   await putVisitor(ip);
 
